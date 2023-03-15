@@ -1,6 +1,7 @@
 import requests
 import time
 from parsel import Selector
+from tech_news.database import create_news
 
 
 # Requisito 1
@@ -73,8 +74,9 @@ def scrape_news(html_content):
     #     selector.css("div.entry-content > p:first-child::text").extract())
     # news_dict["summary"] = p
 
-    summary = ''.join(selector.css(
-        "div.entry-content > p:nth-of-type(1) *::text").extract())
+    summary = "".join(
+        selector.css("div.entry-content > p:nth-of-type(1) *::text").extract()
+    )
     news_dict["summary"] = summary.strip()
 
     news_dict["category"] = (
@@ -86,9 +88,25 @@ def scrape_news(html_content):
 
 # Requisito 5
 def get_tech_news(amount):
-    """Seu código deve vir aqui"""
+    page_link = "https://blog.betrybe.com/"
+    news_list = []
 
+    while len(news_list) < amount and page_link:
+        page_content = fetch(page_link)
+        news_links = scrape_updates(page_content)
+        for link in news_links:
+            html_content = fetch(link)
+            news_dict = scrape_news(html_content)
+
+            news_list.append(news_dict)
+            if len(news_list) == amount:
+                break
+
+        page_link = scrape_next_page_link(page_content)
+
+    create_news(news_list)
+    return news_list
 
 # html = fetch("https://blog.betrybe.com/tecnologia/arquivo-bin/")
 # news_dict = scrape_news(html)
-# print(news_dict)
+# print(get_tech_news(2))
