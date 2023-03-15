@@ -41,7 +41,47 @@ def scrape_next_page_link(html_content):
 
 # Requisito 4
 def scrape_news(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(text=html_content)
+    news_dict = {}
+
+    news_dict["url"] = (
+        selector.css('link[rel="canonical"]::attr(href)').get().strip()
+    )
+    news_dict["title"] = selector.css("h1.entry-title::text").get().strip()
+
+    news_dict["timestamp"] = selector.css("li.meta-date::text").get().strip()
+
+    news_dict["writer"] = (
+        selector.css("li.meta-author span.author a::text").get().strip()
+    )
+
+    news_dict["reading_time"] = int(
+        selector.css("li.meta-reading-time::text").re_first(r"\d+")
+    )
+
+    # news_dict["summary"] = (
+    #     selector.css("div.entry-content p:nth-child(2)::text")[0].get()
+    # .strip()
+    # )
+
+    # news_dict["summary"] = (
+    #     selector.css("div.entry-content p *::text")[0].get().strip()
+    # ) <<<< ====
+
+    # deu certo no teste manual mas não passou no avaliador
+    # p = ' '.join(
+    #     selector.css("div.entry-content > p:first-child::text").extract())
+    # news_dict["summary"] = p
+
+    summary = ''.join(selector.css(
+        "div.entry-content > p:nth-of-type(1) *::text").extract())
+    news_dict["summary"] = summary.strip()
+
+    news_dict["category"] = (
+        selector.css(".category-style span.label::text").get().strip()
+    )
+
+    return news_dict
 
 
 # Requisito 5
@@ -49,6 +89,6 @@ def get_tech_news(amount):
     """Seu código deve vir aqui"""
 
 
-# html = fetch("https://blog.betrybe.com/")
-# print(html)
-# scrape_news(html)
+# html = fetch("https://blog.betrybe.com/tecnologia/arquivo-bin/")
+# news_dict = scrape_news(html)
+# print(news_dict)
