@@ -54,21 +54,3 @@ def test_reading_plan_group_news():
     with pytest.raises(ValueError) as info:
         readingPlan.group_news_for_available_time(0)
     assert str(info.value) == "Valor 'available_time' deve ser maior que zero"
-
-    # expected2 = {
-    #     "readable": [
-    #         {
-    #             "unfilled_time": 5,
-    #             "chosen_news": [
-    #                 ("Notícia bacana", 4),
-    #                 ("Notícia bacana 2", 1),
-    #             ],
-    #         },
-    #     ],
-    #     "unreadable": [("Notícia 3", 15)],
-    # }
-
-    # with patch("tech_news.database.find_news") as mock_find_news:
-    #     mock_find_news.return_value = mock_news
-
-    #     assert readingPlan.group_news_for_available_time(10) == expected2
